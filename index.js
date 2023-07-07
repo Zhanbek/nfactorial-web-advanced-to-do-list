@@ -140,6 +140,57 @@ app.use(express.json());
 
   });
   
+  app.patch('/actions/MoveToTrash/:id', async (req, res) => {
+    
+    try {
+  
+      const actionId = req.params.id;
+
+      const newStatusObject = await ActionStatusModel.findOne({
+        name: "Trash"
+      });
+
+      const toDoStatusObject = await ActionStatusModel.findOne({
+        name: "ToDo"
+      });
+
+      const DoneStatusObject = await ActionStatusModel.findOne({
+        name: "Done"
+      });
+
+      const actionObject = await ActionModel.findById({
+        _id:  new mongoose.Types.ObjectId(actionId)   
+      });
+      
+      if (!actionObject) {
+        return res.status(404).json({ message: 'Запись действия не найдена' });
+      }
+
+      const currentStatusObject = await ActionStatusModel.findById({
+        _id: actionObject.status
+      });
+
+      if (currentStatusObject.name === toDoStatusObject.name || currentStatusObject.name === DoneStatusObject.name) {
+        // Обновить поле статуса
+        actionObject.status = newStatusObject;
+
+        console.log('newStatusObject = ' + newStatusObject);
+        console.log('actionObject.status = ' + actionObject.status);     
+
+        // Сохранить изменения
+        await actionObject.save();
+
+        res.status(200).json({ message: 'Действие перемещено в корзину' });    
+      } else {
+        res.status(404).json({ message: 'Переместить в корзину можно только действие, которое находится в статусе ToDo или Done' });
+      }
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+    }
+
+  });
 
   app.listen(9001, () => {
     console.log("app is listening on port 9001");
