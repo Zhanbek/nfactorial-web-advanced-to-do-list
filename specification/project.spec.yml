@@ -10,3 +10,53 @@ info:
 tags:
   - name: actions
     description: Дествия с элементами ToDo List-а.
+
+paths:
+  /actions:
+    get:
+      tags:
+        - actions
+      summary: Получение списка всех элементов списка
+      description: Возвращает весь список дел.
+
+  /actions/getByStatusName/:name:
+    get:
+      tags:
+        - actions
+      summary: Получение списка дел в статусе :name
+      description: Возвращает список дел в статусе :name
+
+  /actions/create:
+    post:
+      tags:
+        - actions
+      summary: Регистрация нового элемента в статусе "ToDo"
+      description: Создаёт новый элемент в статусе "ToDo"
+
+  /actions/SetAsDone/:id:
+    patch:
+      tags:
+        - actions
+      summary: Переводит элемент из статуса "ToDo" в статус "Done".
+      description: Помечает элемент как выполненный.
+
+  /actions/MoveToTrash/:id:    
+    patch:
+      tags:
+        - actions
+      summary: Переводит элемент из статуса "ToDo" / "Done" в статус "Trash".
+      description: Перемещает элемент в Корзину
+
+  /actions/MarkAsDelete/:id:
+    patch:
+      tags:
+        - actions
+      summary: Переводит элемент из статуса "Trash" в статус "Deleted".
+      description: Удаляет элемент из Корзины
+
+  /actions/restore/:id:
+    patch:
+      tags:
+        - actions
+      summary: Переводит элемент из статуса "Trash" в статус "ToDo".
+      description: Восстанавливает элемент из корзины
