@@ -60,3 +60,10 @@ paths:
         - actions
       summary: Переводит элемент из статуса "Trash" в статус "ToDo".
       description: Восстанавливает элемент из корзины
+
+    /actions/MarkAllTrashAsDelete/:
+    patch:
+      tags:
+        - actions
+      summary: Переводит ВСЕ элементы со статусом "Trash" в статус "Deleted".
+      description: Удаляет ВСЕ элементы из Корзины    
