@@ -1,0 +1,12 @@
+openapi: 3.1.0
+info:
+  title: API сервер для проекта "ToDo List".
+  description: |-
+    * Список ресурсов и маршрутов сервера "ToDo List".
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 1.0.0\
+tags:
+  - name: actions
+    description: Дествия с элементами ToDo List-а.
