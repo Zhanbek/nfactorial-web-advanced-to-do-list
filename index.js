@@ -64,6 +64,10 @@ await newActionStatus.save();
 const app = express();
 app.use(express.json());
 
+app.get("/actions/", async (req, res) => {
+  const actions= await actionModel.find();
+  res.status(200).send(actions);
+});
 
 app.get("/actions/byStatus/:name", async (req, res) => {
   const actionName = req.params.name;
@@ -83,7 +87,6 @@ app.get("/actions/byStatus/:name", async (req, res) => {
   );
 
   res.status(200).send(actionsByStatus);
-
 });
 
 // app.post('/create', async (req, res) => {
