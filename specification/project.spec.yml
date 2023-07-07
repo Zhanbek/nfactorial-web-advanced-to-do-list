@@ -61,7 +61,7 @@ paths:
       summary: Переводит элемент из статуса "Trash" в статус "ToDo".
       description: Восстанавливает элемент из корзины
 
-    /actions/MarkAllTrashAsDelete:
+  /actions/MarkAllTrashAsDelete:
     patch:
       tags:
         - actions
