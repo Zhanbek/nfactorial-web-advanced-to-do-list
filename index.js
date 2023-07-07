@@ -47,7 +47,7 @@ app.use(express.json());
   });
 
   // Получить действия по имени статуса
-  app.get("/actions/byStatus/:name", async (req, res) => {
+  app.get("/actions/getByStatusName/:name", async (req, res) => {
     const actionName = req.params.name;
 
     try {
@@ -243,6 +243,53 @@ app.use(express.json());
     }
   });
 
+    // Восстановить действие из корзины
+    app.patch('/actions/restore/:id', async (req, res) => {
+    
+      try {
+    
+        const actionId = req.params.id;
+  
+        const newStatusObject = await ActionStatusModel.findOne({
+          name: "ToDo"
+        });
+  
+        const trashStatusObject = await ActionStatusModel.findOne({
+          name: "Trash"
+        });
+  
+        const actionObject = await ActionModel.findById({
+          _id:  new mongoose.Types.ObjectId(actionId)   
+        });
+        
+        if (!actionObject) {
+          return res.status(404).json({ message: 'Запись действия не найдена' });
+        }
+  
+        const currentStatusObject = await ActionStatusModel.findById({
+          _id: actionObject.status
+        });
+  
+        if (currentStatusObject.name === trashStatusObject.name) {
+          // Обновить поле статуса
+          actionObject.status = newStatusObject;
+  
+          console.log('newStatusObject = ' + newStatusObject);
+          console.log('actionObject.status = ' + actionObject.status);     
+  
+          // Сохранить изменения
+          await actionObject.save();
+  
+          res.status(200).json({ message: 'Действие восстановлено из Корзины' });    
+        } else {
+          res.status(404).json({ message: 'Восстанавливать можно только действие, находящееся в Корзине' });
+        }
+  
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+      }
+    });
 
   app.listen(9001, () => {
     console.log("app is listening on port 9001");
