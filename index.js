@@ -243,9 +243,9 @@ app.use(express.json());
     }
   });
 
-    // Восстановить действие из корзины
-    app.patch('/actions/restore/:id', async (req, res) => {
-    
+  // Восстановить действие из корзины
+  app.patch('/actions/restore/:id', async (req, res) => {
+  
       try {
     
         const actionId = req.params.id;
@@ -289,8 +289,48 @@ app.use(express.json());
         console.error(error);
         res.status(500).json({ message: 'Внутренняя ошибка сервера' });
       }
-    });
+  });
 
+  // Очистить всю корзину
+  app.patch('/actions/MarkAllTrashAsDelete', async (req, res) => {
+    try {
+
+      const trashStatusObject = await ActionStatusModel.findOne({
+        name: "Trash"
+      });
+
+      if (!trashStatusObject) {
+        return res.status(404).json({ message: 'Cтатус "Trash" не найден в коллекции ActionStatuses' });
+      }
+
+      // Найти все записи с текущим статусом "Trash"
+      const trashActions = await ActionModel.find({ status: trashStatusObject });
+  
+      if (trashActions.length === 0) {
+        return res.status(404).json({ message: 'Нет записей в статусе "Trash"' });
+      }
+  
+      const newStatusObject = await ActionStatusModel.findOne({
+        name: "Deleted"
+      });
+
+      if (!newStatusObject) {
+        return res.status(404).json({ message: 'Новый статус "Deleted" для действий не найден в коллекции ActionStatuses' });
+      }
+
+      // Обновить статус каждой записи на "Deleted"
+      for (const action of trashActions) {
+        action.status = newStatusObject;
+        await action.save();
+      }
+  
+      res.status(200).json({ message: 'Корзина очищена' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+    }
+  });
+   
   app.listen(9001, () => {
     console.log("app is listening on port 9001");
   });
