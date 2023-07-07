@@ -93,37 +93,51 @@ app.use(express.json());
   });
 
   app.patch('/actions/SetAsDone/:id', async (req, res) => {
-    const actionId = req.params.id;
-
-    const newStatusObject = await ActionStatusModel.findOne({
-      name: "Done"
-    });
-
-    const toDoStatusObject = await ActionStatusModel.findOne({
-      name: "ToDo"
-    });
-
-    const actionObject = await ActionModel.findById({
-      _id:  new mongoose.Types.ObjectId(actionId)   
-    });
-  
-    const currentStatusObject = await ActionStatusModel.findById({
-      _id: actionObject.status
-    });
-
-    console.log(currentStatusObject.name);
-    console.log(newStatusObject.name);
-    console.log(toDoStatusObject.name);
     
-    console.log(currentStatusObject);
-    console.log(toDoStatusObject);
-    // Найти ресурс по идентификатору и обновить его поле status
-    if (currentStatusObject.name === toDoStatusObject.name) {
-      actionObject.status = newStatusObject._id;
-      res.status(200).json({ message: 'Статус ресурса обновлен' });
-    } else {
-      res.status(404).json({ message: 'Пометить как выполненное можно только действие, которое находится в статусе "ToDo"' });
+    try {
+  
+      const actionId = req.params.id;
+
+      const newStatusObject = await ActionStatusModel.findOne({
+        name: "Done"
+      });
+
+      const toDoStatusObject = await ActionStatusModel.findOne({
+        name: "ToDo"
+      });
+
+      const actionObject = await ActionModel.findById({
+        _id:  new mongoose.Types.ObjectId(actionId)   
+      });
+      
+      if (!actionObject) {
+        return res.status(404).json({ message: 'Запись действия не найдена' });
+      }
+
+      const currentStatusObject = await ActionStatusModel.findById({
+        _id: actionObject.status
+      });
+
+      if (currentStatusObject.name === toDoStatusObject.name) {
+        // Обновить поле статуса
+        actionObject.status = newStatusObject;
+
+        console.log('newStatusObject = ' + newStatusObject);
+        console.log('actionObject.status = ' + actionObject.status);     
+
+        // Сохранить изменения
+        await actionObject.save();
+
+        res.status(200).json({ message: 'Действие переведово в состояние Done' });    
+      } else {
+        res.status(404).json({ message: 'Пометить как выполненное можно только действие, которое находится в статусе ToDo' });
+      }
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Внутренняя ошибка сервера' });
     }
+
   });
   
 
