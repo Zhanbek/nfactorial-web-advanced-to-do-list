@@ -66,4 +66,4 @@ paths:
       tags:
         - actions
       summary: Переводит ВСЕ элементы со статусом "Trash" в статус "Deleted".
-      description: Удаляет ВСЕ элементы из Корзины    
+      description: Очищает Корзину    
