@@ -40,11 +40,13 @@ app.use(express.json());
   const ActionStatusModel = mongoose.model("ActionStatus", actionStatusSchema);
   const ActionModel = mongoose.model("Action", actionSchema);
 
+  // Получить все действия
   app.get("/actions", async (req, res) => {
     const actions = await ActionModel.find();
     res.status(200).json(actions);
   });
 
+  // Получить действия по имени статуса
   app.get("/actions/byStatus/:name", async (req, res) => {
     const actionName = req.params.name;
 
@@ -68,6 +70,7 @@ app.use(express.json());
     }
   });
 
+  // Создать запланированное действие (со статусом "ToDo")
   app.post("/actions/create", async (req, res) => {
     const { name, description } = req.body;
 
@@ -92,6 +95,7 @@ app.use(express.json());
     }
   });
 
+  // Пометить действие как выполненное
   app.patch('/actions/SetAsDone/:id', async (req, res) => {
     
     try {
@@ -137,9 +141,9 @@ app.use(express.json());
       console.error(error);
       res.status(500).json({ message: 'Внутренняя ошибка сервера' });
     }
-
   });
   
+  // Переместить в Корзину
   app.patch('/actions/MoveToTrash/:id', async (req, res) => {
     
     try {
@@ -189,8 +193,56 @@ app.use(express.json());
       console.error(error);
       res.status(500).json({ message: 'Внутренняя ошибка сервера' });
     }
-
   });
+
+  // Удалить действие из корзины
+  app.patch('/actions/MarkAsDelete/:id', async (req, res) => {
+    
+    try {
+  
+      const actionId = req.params.id;
+
+      const newStatusObject = await ActionStatusModel.findOne({
+        name: "Deleted"
+      });
+
+      const trashStatusObject = await ActionStatusModel.findOne({
+        name: "Trash"
+      });
+
+      const actionObject = await ActionModel.findById({
+        _id:  new mongoose.Types.ObjectId(actionId)   
+      });
+      
+      if (!actionObject) {
+        return res.status(404).json({ message: 'Запись действия не найдена' });
+      }
+
+      const currentStatusObject = await ActionStatusModel.findById({
+        _id: actionObject.status
+      });
+
+      if (currentStatusObject.name === trashStatusObject.name) {
+        // Обновить поле статуса
+        actionObject.status = newStatusObject;
+
+        console.log('newStatusObject = ' + newStatusObject);
+        console.log('actionObject.status = ' + actionObject.status);     
+
+        // Сохранить изменения
+        await actionObject.save();
+
+        res.status(200).json({ message: 'Действие удалено из Корзины' });    
+      } else {
+        res.status(404).json({ message: 'Удалить можно только действие, находящееся в Корзине' });
+      }
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+    }
+  });
+
 
   app.listen(9001, () => {
     console.log("app is listening on port 9001");
