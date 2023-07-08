@@ -4,7 +4,7 @@ import express from "express";
 const app = express();
 app.use(express.json());
 
-//(async () => {
+(async () => {
   try {
     await mongoose.connect("mongodb://127.0.0.1:27017/TodoListProject");
     console.log("Connected to MongoDB");
@@ -141,7 +141,7 @@ app.use(express.json());
         return res.status(404).json({ message: 'Запись действия не найдена' });
       }
 
-      const currentStatusObject = await ActionStatusModel.findById({
+      const currentStatusObject = await actionStatusModel.findById({
         _id: actionObject.status
       });
 
@@ -162,7 +162,7 @@ app.use(express.json());
 
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+      res.status(500).json({ message: `Ошибка ${error}` });
     }
   });
   
@@ -356,4 +356,4 @@ app.use(express.json());
   app.listen(9001, () => {
     console.log("app is listening on port 9001");
   });
-//})();
+})();
