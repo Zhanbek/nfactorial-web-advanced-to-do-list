@@ -98,13 +98,13 @@ app.use(express.json());
     const { name, description } = req.body;
 
     try {
-      const toDoStatus = await ActionStatusModel.findOne({ name: "ToDo" });
+      const toDoStatus = await actionStatusModel.findOne({ name: "ToDo" });
 
       if (!toDoStatus) {
         return res.status(404).json({ message: "Status not found" });
       }
 
-      const newAction = new ActionModel({
+      const newAction = new actionModel({
         name,
         description,
         status: toDoStatus._id
@@ -125,15 +125,15 @@ app.use(express.json());
   
       const actionId = req.params.id;
 
-      const newStatusObject = await ActionStatusModel.findOne({
+      const newStatusObject = await actionStatusModel.findOne({
         name: "Done"
       });
 
-      const toDoStatusObject = await ActionStatusModel.findOne({
+      const toDoStatusObject = await actionStatusModel.findOne({
         name: "ToDo"
       });
 
-      const actionObject = await ActionModel.findById({
+      const actionObject = await actionModel.findById({
         _id:  new mongoose.Types.ObjectId(actionId)   
       });
       
@@ -173,19 +173,19 @@ app.use(express.json());
   
       const actionId = req.params.id;
 
-      const newStatusObject = await ActionStatusModel.findOne({
+      const newStatusObject = await actionStatusModel.findOne({
         name: "Trash"
       });
 
-      const toDoStatusObject = await ActionStatusModel.findOne({
+      const toDoStatusObject = await actionStatusModel.findOne({
         name: "ToDo"
       });
 
-      const DoneStatusObject = await ActionStatusModel.findOne({
+      const DoneStatusObject = await actionStatusModel.findOne({
         name: "Done"
       });
 
-      const actionObject = await ActionModel.findById({
+      const actionObject = await actionModel.findById({
         _id:  new mongoose.Types.ObjectId(actionId)   
       });
       
@@ -193,7 +193,7 @@ app.use(express.json());
         return res.status(404).json({ message: 'Запись действия не найдена' });
       }
 
-      const currentStatusObject = await ActionStatusModel.findById({
+      const currentStatusObject = await actionStatusModel.findById({
         _id: actionObject.status
       });
 
@@ -225,15 +225,15 @@ app.use(express.json());
   
       const actionId = req.params.id;
 
-      const newStatusObject = await ActionStatusModel.findOne({
+      const newStatusObject = await actionStatusModel.findOne({
         name: "Deleted"
       });
 
-      const trashStatusObject = await ActionStatusModel.findOne({
+      const trashStatusObject = await actionStatusModel.findOne({
         name: "Trash"
       });
 
-      const actionObject = await ActionModel.findById({
+      const actionObject = await actionModel.findById({
         _id:  new mongoose.Types.ObjectId(actionId)   
       });
       
@@ -241,7 +241,7 @@ app.use(express.json());
         return res.status(404).json({ message: 'Запись действия не найдена' });
       }
 
-      const currentStatusObject = await ActionStatusModel.findById({
+      const currentStatusObject = await actionStatusModel.findById({
         _id: actionObject.status
       });
 
@@ -272,15 +272,15 @@ app.use(express.json());
       try {    
         const actionId = req.params.id;
   
-        const newStatusObject = await ActionStatusModel.findOne({
+        const newStatusObject = await actionStatusModel.findOne({
           name: "ToDo"
         });
   
-        const trashStatusObject = await ActionStatusModel.findOne({
+        const trashStatusObject = await actionStatusModel.findOne({
           name: "Trash"
         });
   
-        const actionObject = await ActionModel.findById({
+        const actionObject = await actionModel.findById({
           _id:  new mongoose.Types.ObjectId(actionId)   
         });
         
@@ -288,7 +288,7 @@ app.use(express.json());
           return res.status(404).json({ message: 'Запись действия не найдена' });
         }
   
-        const currentStatusObject = await ActionStatusModel.findById({
+        const currentStatusObject = await actionStatusModel.findById({
           _id: actionObject.status
         });
   
@@ -317,7 +317,7 @@ app.use(express.json());
   app.patch('/actions/MarkAllTrashAsDelete', async (req, res) => {
     try {
 
-      const trashStatusObject = await ActionStatusModel.findOne({
+      const trashStatusObject = await actionStatusModel.findOne({
         name: "Trash"
       });
 
@@ -326,13 +326,13 @@ app.use(express.json());
       }
 
       // Найти все записи с текущим статусом "Trash"
-      const trashActions = await ActionModel.find({ status: trashStatusObject });
+      const trashActions = await actionModel.find({ status: trashStatusObject });
   
       if (trashActions.length === 0) {
         return res.status(404).json({ message: 'Нет записей в статусе "Trash"' });
       }
   
-      const newStatusObject = await ActionStatusModel.findOne({
+      const newStatusObject = await actionStatusModel.findOne({
         name: "Deleted"
       });
 
