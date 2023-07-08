@@ -4,7 +4,7 @@ import express from "express";
 const app = express();
 app.use(express.json());
 
-(async () => {
+//(async () => {
   try {
     await mongoose.connect("mongodb://127.0.0.1:27017/TodoListProject");
     console.log("Connected to MongoDB");
@@ -27,7 +27,8 @@ app.use(express.json());
   const actionSchema = new mongoose.Schema({
     name: {
       type: String,
-      required: true
+      required: true,
+      unique: true
     },
     description: {
       type: String,
@@ -37,8 +38,30 @@ app.use(express.json());
   });
 
   // Создание моделей на основе схем
-  const ActionStatusModel = mongoose.model("ActionStatus", actionStatusSchema);
-  const ActionModel = mongoose.model("Action", actionSchema);
+  const actionStatusModel = mongoose.model("ActionStatus", actionStatusSchema);
+  const actionModel = mongoose.model("Action", actionSchema);
+
+  /*
+  let newActionStatus = await new actionStatusModel({
+    "name": "ToDo",
+  });
+  await newActionStatus.save();
+
+  newActionStatus = await new actionStatusModel({
+    "name": "Done",
+  });
+  await newActionStatus.save();
+
+  newActionStatus = await new actionStatusModel({
+    "name": "Trash",
+  });
+  await newActionStatus.save();
+
+  newActionStatus = await new actionStatusModel({
+    "name": "Deleted",
+  });
+  await newActionStatus.save();
+  */
 
   // Получить все действия
   app.get("/actions", async (req, res) => {
@@ -51,7 +74,7 @@ app.use(express.json());
     const actionName = req.params.name;
 
     try {
-      const objectStatus = await ActionStatusModel.findOne({
+      const objectStatus = await actionStatusModel.findOne({
         name: actionName
       });
 
@@ -59,14 +82,14 @@ app.use(express.json());
         return res.status(404).json({ message: "Status '" + actionName + "' was not found in ActionStatuses collection" });
       }
 
-      const actionsByStatus = await ActionModel.find({
+      const actionsByStatus = await actionModel.find({
         status: objectStatus._id
       });
 
       res.status(200).json(actionsByStatus);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: `${error}` });
     }
   });
 
@@ -132,7 +155,7 @@ app.use(express.json());
         // Сохранить изменения
         await actionObject.save();
 
-        res.status(200).json({ message: 'Действие переведово в состояние Done' });    
+        res.status(200).json({ message: `Действие c _id [${actionId}] переведено в состояние Done` });    
       } else {
         res.status(404).json({ message: 'Пометить как выполненное можно только действие, которое находится в статусе ToDo' });
       }
@@ -184,7 +207,7 @@ app.use(express.json());
         // Сохранить изменения
         await actionObject.save();
 
-        res.status(200).json({ message: 'Действие перемещено в корзину' });    
+        res.status(200).json({ message: `Действие c _id [${actionId}] перемещено в корзину` });    
       } else {
         res.status(404).json({ message: 'Переместить в корзину можно только действие, которое находится в статусе ToDo или Done' });
       }
@@ -232,7 +255,7 @@ app.use(express.json());
         // Сохранить изменения
         await actionObject.save();
 
-        res.status(200).json({ message: 'Действие удалено из Корзины' });    
+        res.status(200).json({ message: `Действие c _id [${actionId}] удалено из Корзины` });    
       } else {
         res.status(404).json({ message: 'Удалить можно только действие, находящееся в Корзине' });
       }
@@ -246,8 +269,7 @@ app.use(express.json());
   // Восстановить действие из корзины
   app.patch('/actions/restore/:id', async (req, res) => {
   
-      try {
-    
+      try {    
         const actionId = req.params.id;
   
         const newStatusObject = await ActionStatusModel.findOne({
@@ -280,7 +302,7 @@ app.use(express.json());
           // Сохранить изменения
           await actionObject.save();
   
-          res.status(200).json({ message: 'Действие восстановлено из Корзины' });    
+          res.status(200).json({ message: `Действие c _id [${actionId}] восстановлено из Корзины` });    
         } else {
           res.status(404).json({ message: 'Восстанавливать можно только действие, находящееся в Корзине' });
         }
@@ -334,4 +356,4 @@ app.use(express.json());
   app.listen(9001, () => {
     console.log("app is listening on port 9001");
   });
-})();
+//})();
