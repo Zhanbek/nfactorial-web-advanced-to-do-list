@@ -149,8 +149,8 @@ app.use(express.json());
         // Обновить поле статуса
         actionObject.status = newStatusObject;
 
-        console.log('newStatusObject = ' + newStatusObject);
-        console.log('actionObject.status = ' + actionObject.status);     
+        //console.log('newStatusObject = ' + newStatusObject);
+        //console.log('actionObject.status = ' + actionObject.status);     
 
         // Сохранить изменения
         await actionObject.save();
@@ -201,8 +201,10 @@ app.use(express.json());
         // Обновить поле статуса
         actionObject.status = newStatusObject;
 
+        /*
         console.log('newStatusObject = ' + newStatusObject);
         console.log('actionObject.status = ' + actionObject.status);     
+        */
 
         // Сохранить изменения
         await actionObject.save();
@@ -249,8 +251,10 @@ app.use(express.json());
         // Обновить поле статуса
         actionObject.status = newStatusObject;
 
+        /*
         console.log('newStatusObject = ' + newStatusObject);
         console.log('actionObject.status = ' + actionObject.status);     
+        */
 
         // Сохранить изменения
         await actionObject.save();
@@ -295,10 +299,12 @@ app.use(express.json());
         if (currentStatusObject.name === trashStatusObject.name) {
           // Обновить поле статуса
           actionObject.status = newStatusObject;
-  
+          
+          /*
           console.log('newStatusObject = ' + newStatusObject);
           console.log('actionObject.status = ' + actionObject.status);     
-  
+          */
+         
           // Сохранить изменения
           await actionObject.save();
   
